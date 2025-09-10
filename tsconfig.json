@@ -1,0 +1,11 @@
+{
+  "extends": "@tsconfig/node22/tsconfig.json",
+  "compilerOptions": {
+	"allowJs": true,
+    "outDir": "dist",
+	"resolveJsonModule": true
+  },
+  "ts-node": { "files": true },
+  "include": ["src/**/*.ts", "tests/**/*.ts"],
+  "exclude": ["node_modules"]
+}

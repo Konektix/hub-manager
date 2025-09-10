@@ -1,0 +1,70 @@
+import { Router, Request, Response, NextFunction } from 'express';
+import { Keycloak } from 'keycloak-connect';
+import { DevicesMessage, Hub, UUID } from '../types';
+import { HubService } from '../services/hubService';
+import { BaseController } from './baseController';
+
+export class HubController extends BaseController {
+    private readonly url: string = '/hubs';
+    private readonly hubService: HubService;
+
+    constructor(hubService: HubService) {
+        super();
+        this.hubService = hubService;
+    }
+
+    init(router: Router, keycloak: Keycloak) {
+        // router.get(this.url, [keycloak.protect()], this.getHubs);
+        router.get(this.url, this.getHubs);
+        router.get(this.url + '/:id', this.getHubById);
+        router.post(this.url, this.createHub);
+        router.post(this.url + '/:id', this.updateHubDevicesFromMessage);
+    }
+
+    private getHubs = async (req: Request, res: Response<Hub[]>, next: NextFunction) => {
+        try {
+            const hubs = await this.hubService.getAll();
+            res.send(hubs);
+        } catch (error) {
+            next(error);
+        }
+    };
+
+    private getHubById = async (req: Request<{ id: UUID }>, res: Response<Hub | null>, next: NextFunction) => {
+        try {
+            const { id } = req.params;
+            const hub = await this.hubService.getHub(id);
+            res.send(hub);
+        } catch (error) {
+            next(error);
+        }
+    };
+
+	private createHub = async (req: Request<unknown, Hub, { name: string }>, res: Response<Hub>, next: NextFunction) => {
+		try {
+            const { name } = req.body;
+            const hub = await this.hubService.createHub(name)
+            res.send(hub);
+        } catch (error) {
+            next(error);
+        }
+	}
+
+	private updateHubDevicesFromMessage = async (req: Request<{ id: UUID }, Hub, DevicesMessage>, res: Response<Hub>, next: NextFunction) => {
+		try {
+			const { id } = req.params
+			console.log(`Received message for hub: ${id}`)
+            console.log(`Url: ${req.url}`)
+			console.log(req.body)
+			console.log("Headers:");
+			console.log(req.headers);
+			const message = req.body;
+            const hub = await this.hubService.updateHubDevicesFromMessage(id, message);
+			console.log('Message handled')
+            res.send(hub);
+        } catch (error) {
+			console.log(error)
+            next(error);
+        }
+	}
+}

@@ -1,0 +1,51 @@
+services:
+  hub-manager-db:
+    extends:
+      file: docker-compose.base.yml
+      service: hub-manager-db
+    # networks:
+    #   - common_network
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: hubManagerDB
+      POSTGRES_USER: ${HUB_MANAGER_DB_USER}
+      POSTGRES_PASSWORD: ${HUB_MANAGER_DB_PASSWORD}
+      # POSTGRES_HOST_AUTH_METHOD: trust # disable authentication - not for prod
+
+  pgadmin:
+    container_name: pgadmin_container
+    image: dpage/pgadmin4
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: root
+    ports:
+      - "5050:80"
+    depends_on:
+      - hub-manager-db
+    # networks:
+    #   - common_network
+    volumes: 
+      - pgadmin:/var/lib/pgadmin
+
+  hub-manager:
+    container_name: hub_manager_container
+    restart: unless-stopped
+    build: .
+    # ports:
+    #   - ${HUB_MANAGER_PORT:-3000}:3000
+    environment:
+      DATABASE_URL: postgresql://${HUB_MANAGER_DB_USER}:${HUB_MANAGER_DB_PASSWORD}@hub-manager-db:5432/hubManagerDB
+    depends_on:
+      - hub-manager-db
+    # networks:
+    #   - common_network
+
+# networks:
+#   common_network:
+#     driver: bridge
+
+volumes:
+  postgres:
+  pgadmin:
