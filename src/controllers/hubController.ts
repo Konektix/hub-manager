@@ -53,14 +53,8 @@ export class HubController extends BaseController {
 	private updateHubDevicesFromMessage = async (req: Request<{ id: UUID }, Hub, DevicesMessage>, res: Response<Hub>, next: NextFunction) => {
 		try {
 			const { id } = req.params
-			console.log(`Received message for hub: ${id}`)
-            console.log(`Url: ${req.url}`)
-			console.log(req.body)
-			console.log("Headers:");
-			console.log(req.headers);
 			const message = req.body;
             const hub = await this.hubService.updateHubDevicesFromMessage(id, message);
-			console.log('Message handled')
             res.send(hub);
         } catch (error) {
 			console.log(error)

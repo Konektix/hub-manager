@@ -3,10 +3,9 @@ services:
     container_name: hub_manager_db_container
     image: postgres:17
     restart: unless-stopped
-    # ports:
-    #   - 5432:5432
+    ports:
+      - 5432:5432
     environment:
       POSTGRES_DB: hubManagerDB
       POSTGRES_USER: ${HUB_MANAGER_DB_USER}
       POSTGRES_PASSWORD: ${HUB_MANAGER_DB_PASSWORD}
-      # POSTGRES_HOST_AUTH_METHOD: trust # disable authentication - not for prod
