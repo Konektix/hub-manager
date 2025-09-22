@@ -1,5 +1,5 @@
 import { Router, Request, Response, NextFunction } from 'express';
-import { Keycloak } from 'keycloak-connect';
+import { Keycloak } from '../utils'
 import { DevicesMessage, Hub, UUID } from '../types';
 import { HubService } from '../services/hubService';
 import { BaseController } from './baseController';
@@ -8,17 +8,17 @@ export class HubController extends BaseController {
     private readonly url: string = '/hubs';
     private readonly hubService: HubService;
 
-    constructor(hubService: HubService) {
-        super();
+    constructor(keycloak: Keycloak, hubService: HubService) {
+        super(keycloak);
         this.hubService = hubService;
     }
 
-    init(router: Router, keycloak: Keycloak) {
+    init(router: Router) {
         // router.get(this.url, [keycloak.protect()], this.getHubs);
-        router.get(this.url, this.getHubs);
+        router.get(this.url, this.authenticate, this.getHubs);
         router.get(this.url + '/:id', this.getHubById);
         router.post(this.url, this.createHub);
-        router.post(this.url + '/:id', this.updateHubDevicesFromMessage);
+        router.post(this.url + '/:id', this.authenticate, this.updateHubDevicesFromMessage);
     }
 
     private getHubs = async (req: Request, res: Response<Hub[]>, next: NextFunction) => {

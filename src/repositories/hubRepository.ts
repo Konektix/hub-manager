@@ -66,6 +66,7 @@ export class HubRepository extends BaseRepository<'hub'> {
                             removed: true,
                         },
                     },
+					
                 },
             },
             include: {

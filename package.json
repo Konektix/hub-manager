@@ -25,11 +25,11 @@
   "description": "",
   "dependencies": {
     "@tsconfig/node22": "^22.0.2",
-    "body-parser": "^2.2.0",
     "compression": "^1.8.1",
     "cors": "^2.8.5",
     "dotenv": "^17.2.1",
     "express": "^5.1.0",
+    "jose": "^6.1.0",
     "keycloak-connect": "^26.1.1",
     "uuid": "^11.1.0"
   },
